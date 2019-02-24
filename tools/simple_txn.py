@@ -19,24 +19,24 @@ out1_amount    = 30090000
 sequence       = 4294967293
 
 # Code
-prev_hash=bytes.fromhex(in1_prev_hash)
+prev_hash = bytes.fromhex(in1_prev_hash)
 device = get_transport()
-client = TrezorClient(transport=device, ui=ui.ClickUI())
+client = TrezorClient(transport = device, ui = ui.ClickUI())
 
 in1 = proto.TxInputType(
-    address_n=tools.parse_path(in1_addr_path),
-    prev_hash=prev_hash,
-    prev_index=in1_prev_index,
-    amount=in1_amount,
-    script_type=proto.InputScriptType.SPENDADDRESS,
-    sequence=sequence
+    address_n = tools.parse_path(in1_addr_path),
+    prev_hash = prev_hash,
+    prev_index = in1_prev_index,
+    amount = in1_amount,
+    script_type = proto.InputScriptType.SPENDADDRESS,
+    sequence = sequence
 )
 out1 = proto.TxOutputType(
-    address=out1_address,
-    amount=out1_amount,
-    script_type=proto.OutputScriptType.PAYTOADDRESS
+    address = out1_address,
+    amount = out1_amount,
+    script_type = proto.OutputScriptType.PAYTOADDRESS
 )
 
-_, serialized_tx = btc.sign_tx(client, coin, [in1], [out1], prev_txes=coins.tx_api[coin])
+_, serialized_tx = btc.sign_tx(client, coin, [in1], [out1], prev_txes = coins.tx_api[coin])
 client.close()
 print('"txn_hex": {', serialized_tx.hex(), '}')
