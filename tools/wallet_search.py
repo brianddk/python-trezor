@@ -9,9 +9,7 @@ from trezorlib.transport import get_transport
 from trezorlib.tools import parse_path
 from trezorlib import btc, ethereum, messages
 from trezorlib.ui import ClickUI
-from trezorlib.exceptions import TrezorFailure
 from os.path import isfile
-from urllib.error import HTTPError
 import urllib.request
 import json
 import glob
@@ -24,6 +22,8 @@ def get_ethereum_address(path):
     try:
         client = TrezorClient(transport, ui)
         address = ethereum.get_address(client, parse_path(path))
+    except Exception:
+        pass
     finally:
         client.close()
     return '0x' + address.hex()
@@ -42,7 +42,7 @@ def get_address(coin, path, addr_type):
     try:
         client = TrezorClient(transport, ui)
         address = btc.get_address(client, coin['coin_name'], parse_path(path), show_display=False, multisig=None, script_type=script_type)
-    except TrezorFailure:
+    except Exception:
         pass
     finally:
         client.close()
@@ -113,7 +113,7 @@ def verify_coins(coins):
                     if(data.replace(' ', '').find('"inSync":true') >= 0):
                         coin['api'] = url
                         break
-            except HTTPError:
+            except Exception:
                 pass
 
         if 'coin_label' in coin:
@@ -136,7 +136,7 @@ def get_address_info(coin, address):
     try:
         with urllib.request.urlopen(q) as req:
             data = json.loads(req.read().decode())
-    except HTTPError:
+    except Exception:
         raise
     return data
 
@@ -176,7 +176,7 @@ def main():
                             address = get_address(coin, path, fmt_type)
                         try:
                             addr_info = get_address_info(coin, address)
-                        except HTTPError:
+                        except Exception:
                             print("ERROR:", coin['coin_label'], path, address)
                             addr_info = {'txApperances': 0}
                         if (('txApperances' in addr_info) and (addr_info['txApperances'] > 0)) or \

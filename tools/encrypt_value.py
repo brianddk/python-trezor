@@ -19,7 +19,7 @@ def key_to_addr(key):
     addr = []
     try:
         key_hex = bytes.fromhex(key).hex()
-    except ValueError:
+    except Exception:
         key_hex = str.encode(key).hex()
     while len(key_hex):
         addr.append(int(key_hex[:8], 16))
@@ -113,12 +113,12 @@ if __name__ == '__main__':
     parser.add_argument("-d", "--decrypt", action="store_true", help="perform decryption operation")
     parser.add_argument("-v", "--verbose", action="store_true", help="high verbosity")
     args = parser.parse_args()
-    device = get_transport()
-    client = TrezorClient(transport=device, ui=ui.ClickUI())
     value = input_value(args)
     key, addr = input_key_addr(value, kheader, aheader, args)
     if args.verbose:
         sys.stderr.write(kheader + " " + str(key) + "\n" + aheader + " " + encode_addr(addr) + "\n")
+    device = get_transport()
+    client = TrezorClient(transport=device, ui=ui.ClickUI())
     if args.decrypt:
         dec = misc.decrypt_keyvalue(client, addr, key, dearmor(value), ask_on_encrypt=False, ask_on_decrypt=False)
         sys.stdout.buffer.write(depad_value(dec))
