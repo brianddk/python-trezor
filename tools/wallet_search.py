@@ -26,7 +26,7 @@ def get_ethereum_address(path):
         pass
     finally:
         client.close()
-    return '0x' + address.hex()
+    return address
 
 
 def get_address(coin, path, addr_type):
