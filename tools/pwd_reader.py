@@ -17,6 +17,7 @@ from trezorlib.tools import parse_path
 # Return path by BIP-32
 BIP32_PATH = parse_path("10016h/0")
 
+
 class NoPassphraseUi(ClickUI):
     def get_passphrase(self):
         return ""
