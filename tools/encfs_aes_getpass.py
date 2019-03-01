@@ -11,7 +11,6 @@ import os
 import sys
 import json
 import hashlib
-
 import trezorlib
 
 version_tuple = tuple(map(int, trezorlib.__version__.split(".")))
@@ -21,8 +20,12 @@ if not (0, 11) <= version_tuple < (0, 12):
 from trezorlib.client import TrezorClient
 from trezorlib.transport import enumerate_devices
 from trezorlib.ui import ClickUI
-
 import trezorlib.misc
+
+
+class NoPassphraseUi(ClickUI):
+    def get_passphrase(self):
+        return ""
 
 
 def wait_for_devices():
@@ -50,7 +53,7 @@ def choose_device(devices):
     sys.stderr.write("Available devices:\n")
     for d in devices:
         try:
-            client = TrezorClient(d, ui=ClickUI())
+            client = TrezorClient(d, ui=NoPassphraseUi())
         except IOError:
             sys.stderr.write("[-] <device is currently in use>\n")
             continue
@@ -85,7 +88,7 @@ def main():
 
     devices = wait_for_devices()
     transport = choose_device(devices)
-    client = TrezorClient(transport, ui=ClickUI())
+    client = TrezorClient(transport, ui=NoPassphraseUi())
 
     rootdir = os.environ["encfs_root"]  # Read "man encfs" for more
     passw_file = os.path.join(rootdir, "password.dat")

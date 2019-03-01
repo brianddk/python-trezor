@@ -7,7 +7,8 @@ import json
 import os
 from urllib.parse import urlparse
 
-from trezorlib import misc, ui
+from trezorlib import misc
+from trezorlib.ui import ClickUI
 from trezorlib.client import TrezorClient
 from trezorlib.transport import get_transport
 from trezorlib.tools import parse_path
@@ -15,6 +16,10 @@ from trezorlib.tools import parse_path
 
 # Return path by BIP-32
 BIP32_PATH = parse_path("10016h/0")
+
+class NoPassphraseUi(ClickUI):
+    def get_passphrase(self):
+        return ""
 
 
 # Deriving master key
@@ -133,7 +138,7 @@ def main():
         print(e)
         return
 
-    client = TrezorClient(transport=transport, ui=ui.ClickUI())
+    client = TrezorClient(transport=transport, ui=NoPassphraseUi())
 
     print()
     print('Confirm operation on TREZOR')

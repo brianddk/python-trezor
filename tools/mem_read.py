@@ -1,4 +1,5 @@
 #!/usr/bin/env python3
+from trezorlib.ui import ClickUI
 from trezorlib.debuglink import DebugLink
 from trezorlib.client import TrezorClient
 from trezorlib.transport import enumerate_devices
@@ -17,17 +18,28 @@ def main():
     # List all debuggable TREZORs
     devices = [device for device in enumerate_devices() if hasattr(device, 'find_debug')]
 
+    # Try to get debug transport on devices
+    debug_transport = None
+    for dev in devices:
+        try:
+            transport = dev
+            debug_transport = dev.find_debug()
+            break
+        except Exception:
+            pass
+
     # Check whether we found any
     if len(devices) == 0:
         print('No TREZOR found')
         return
 
-    # Use first connected device
-    transport = devices[0]
-    debug_transport = devices[0].find_debug()
+    # Check if its available
+    if not debug_transport:
+        print('Debug device not available')
+        return
 
     # Creates object for manipulating TREZOR
-    client = TrezorClient(transport)
+    client = TrezorClient(transport, ui=ClickUI())
     debug = DebugLink(debug_transport)
 
     arg1 = int(sys.argv[1], 16)
