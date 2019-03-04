@@ -1293,7 +1293,7 @@ def ethereum_sign_tx(
         nonce=nonce,
         gas_price=gas_price,
         gas_limit=gas_limit,
-        to=to_address,
+        to=to,
         value=value,
         data=data,
         chain_id=chain_id,
